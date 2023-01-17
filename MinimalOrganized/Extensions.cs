@@ -4,7 +4,7 @@ namespace MinimalOrganized;
 
 public static class Extensions
 {
-    public static WebApplication UseApiRouters(this WebApplication app)
+    public static void UseApiRouters(this WebApplication app)
     {
         AppDomain.CurrentDomain.GetAssemblies().First(x => x.GetName().Name == AppDomain.CurrentDomain.FriendlyName)
             .GetTypes().Where(t =>
@@ -20,7 +20,5 @@ public static class Extensions
 
                 instance.Init(app);
             });
-
-        return app;
     }
 }
