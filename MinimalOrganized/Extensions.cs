@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System.Reflection;
 
 namespace MinimalOrganized;
 
@@ -20,5 +23,19 @@ public static class Extensions
 
                 instance.Init(app);
             });
+    }
+
+    public static IEndpointConventionBuilder ValidateRequest<T>(this RouteHandlerBuilder builder)
+    {
+        builder.AddEndpointFilterFactory((context, next) =>
+        {
+            if (!context.MethodInfo.GetParameters()
+                    .Any(t => t.GetCustomAttributes().Any(a => a.GetType() == typeof(FromBodyAttribute)))) return next;
+            
+            var filter = new ValidatorFilter<T>();
+            return invocationContext => filter.InvokeAsync(invocationContext, next);
+        });
+
+        return builder;
     }
 }
